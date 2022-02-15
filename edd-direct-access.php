@@ -52,6 +52,9 @@ if ( ! class_exists( 'EDD_Direct_Access' ) ) {
 		private function register_hooks() {
 			add_action( 'template_redirect', array( $this, 'auth_handler' ) );
 			add_filter( 'edd_email_tags', array( $this, 'email_tags' ) );
+
+			add_filter( 'edd_settings_sections_extensions', array( $this, 'add_settings_section' ) );
+			add_filter( 'edd_settings_extensions', array( $this, 'register_settings' ) );
 		}
 
 		/**
@@ -114,11 +117,55 @@ if ( ! class_exists( 'EDD_Direct_Access' ) ) {
 				get_permalink( $success_page )
 			);
 
-			if ( edd_get_option( 'email_template' ) !== 'none' ) {
-				return '<a href="' . esc_url( $direct_access_link ) . '">' . __( 'Purchase Confirmation' ) . '</a>';
-			} else {
+			$email_link_text = edd_get_option( 'edd_direct_access_email_link_text', __( 'Purchase Confirmation', 'edd-direct-access' ) );
+
+			if ( 'none' === edd_get_option( 'email_template' ) || empty( $email_link_text ) ) {
 				return $direct_access_link;
+			} else {
+				return '<a href="' . esc_url( $direct_access_link ) . '">' . $email_link_text . '</a>';
 			}
+		}
+
+		/**
+		 * Add settings section
+		 *
+		 * @since       1.0.0
+		 * @param       array $sections The existing extensions sections
+		 * @return      array The modified extensions settings
+		 */
+		function add_settings_section( $sections ) {
+			$sections['direct-access'] = __( 'Direct Access', 'edd-direct-access' );
+
+			return $sections;
+		}
+
+		/**
+		 * Add settings
+		 *
+		 * @since       1.0.0
+		 * @param       array $settings the existing plugin settings
+		 * @return      array
+		 */
+		function register_settings( $settings ) {
+			$new_settings = array(
+				'direct-access' => array(
+					array(
+						'id'   => 'edd_direct_access_general_settings',
+						'name' => '<strong>' . __( 'Direct Access Settings', 'edd-upload-image' ) . '</strong>',
+						'desc' => '',
+						'type' => 'header'
+					),
+					array(
+						'id'   => 'edd_direct_access_email_link_text',
+						'name' => __( 'Email link text', 'edd-upload-image' ),
+						'desc' => __( '', 'edd-upload-image' ),
+						'type' => 'text',
+						'std'  => __( 'Purchase Confirmation', 'edd-direct-access' )
+					),
+				)
+			);
+
+			return array_merge( $settings, $new_settings );
 		}
 	}
 }
