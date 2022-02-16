@@ -60,7 +60,7 @@ if ( ! class_exists( 'EDD_Direct_Access' ) ) {
 		/**
 		 * Authenicates direct access
 		 */
-		function auth_handler() {
+		public function auth_handler() {
 
 			if ( empty( $_REQUEST[ self::$param_name ] ) ) {
 				return;
@@ -93,7 +93,7 @@ if ( ! class_exists( 'EDD_Direct_Access' ) ) {
 			exit;
 		}
 
-		function email_tags( $tags ) {
+		public function email_tags( $tags ) {
 			$tags[] = array(
 				'tag'         => 'direct_access_link',
 				'description' => __( 'Purchase Confirmation Direct Access Link' ),
